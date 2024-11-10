@@ -17,5 +17,18 @@ float compute_iou(const cv::Rect& a, const cv::Rect& b) {
      * 运行测试点，显示通过就行，不通过会告诉你哪一组矩形错了。
     */
     // IMPLEMENT YOUR CODE HERE
-    return 0.f;
+    // 计算两个矩形的交集
+    int xl = std::max(a.x, b.x);
+    int yt = std::max(a.y, b.y);
+    int xr = std::min(a.x + a.width, b.x + b.width);
+    int yb = std::min(a.y + a.height, b.y + b.height);
+    if (xr <= xl || yb <= yt){
+        return 0.f;
+    }
+    int intersection_area = (xr - xl) * (yb - yt);
+    int a_area = a.width * a.height;
+    int b_area = b.width * b.height;
+    int union_area = a_area + b_area - intersection_area;
+    float iou = static_cast<float>(intersection_area) / static_cast<float>(union_area);
+    return iou;
 }

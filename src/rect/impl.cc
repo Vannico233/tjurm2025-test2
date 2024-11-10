@@ -12,5 +12,27 @@ std::pair<cv::Rect, cv::RotatedRect> get_rect_by_contours(const cv::Mat& input) 
     */
     std::pair<cv::Rect, cv::RotatedRect> res;
     // IMPLEMENT YOUR CODE HERE
+    cv::Mat gray;
+    cv::cvtColor(input, gray, cv::COLOR_BGR2GRAY);
+    cv::Mat edge;
+    cv::Canny(gray, edge, 100, 200);
+    std::vector<std::vector<cv::Point>> ct;
+    cv::findContours(edge, ct, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+    double max_area = 0;
+    std::vector<cv::Point> largest_contour;
+    for (const auto& contour : ct) {
+        double area = cv::contourArea(contour);
+        if (area > max_area) {
+            max_area = area;
+            largest_contour = contour;
+        }
+    }
+    if (!largest_contour.empty()) {
+        cv::Rect bounding_rect = cv::boundingRect(largest_contour);
+        cv::RotatedRect min_area_rect = cv::minAreaRect(largest_contour);
+
+        res = std::make_pair(bounding_rect, min_area_rect);
+    }
+
     return res;
 }

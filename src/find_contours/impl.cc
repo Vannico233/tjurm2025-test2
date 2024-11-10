@@ -18,6 +18,19 @@ std::vector<std::vector<cv::Point>> find_contours(const cv::Mat& input) {
      */
     
     std::vector<std::vector<cv::Point>> res;
-    // IMPLEMENT YOUR CODE HERE
+
+    cv::Mat gray;
+    cv::cvtColor(input, gray, cv::COLOR_BGR2GRAY);
+    cv::Mat edge;
+    cv::Canny(gray, edge, 100, 200);
+
+    std::vector<std::vector<cv::Point>> contour;
+    std::vector<cv::Vec4i> hierarchy;
+    cv::findContours(edge, contour, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
+    for (size_t i = 0; i < contour.size(); ++i) {
+        if (hierarchy[i][2] == -1) { // hierarchy[i][2] == -1 indicates no child, meaning it's an innermost contour
+            res.push_back(contour[i]);
+        }
+    }
     return res;
 }
